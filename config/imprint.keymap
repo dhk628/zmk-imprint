@@ -6,9 +6,254 @@
 #include <dt-bindings/zmk/pointing.h>
 #include <dt-bindings/zmk/rgb.h>
 
+#include "defs.dtsi"
+
 / {
+    behaviors {
+        home_row_mod_left: home_row_mod_left {
+            compatible = "zmk,behavior-hold-tap";
+            label = "HOME_ROW_MOD_LEFT";
+            bindings = <&kp>, <&kp>;
+
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            flavor = "tap-preferred";
+            hold-trigger-key-positions = <5 6 7 8 9 16 17 18 19 20 21 28 29 30 31 32 33 40 41 42 43 44 45 56 57 58 59 60 61 62 63 72 73 74 75 76 77 78 79 55 38 37 36 35>;
+        };
+
+        home_row_mod_right: home_row_mod_right {
+            compatible = "zmk,behavior-hold-tap";
+            label = "HOME_ROW_MOD_RIGHT";
+            bindings = <&kp>, <&kp>;
+
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            flavor = "tap-preferred";
+            hold-trigger-key-positions = <0 1 2 3 4 10 11 12 13 14 15 22 23 24 25 26 27 34 35 36 37 38 39 46 47 48 49 50 51 52 53 54 64 65 66 67 68 69 70 71 41 42 43 44>;
+        };
+
+        thumb_layer: thumb_layer {
+            compatible = "zmk,behavior-hold-tap";
+            label = "THUMB_LAYER";
+            bindings = <&mo>, <&kp>;
+
+            #binding-cells = <2>;
+            tapping-term-ms = <200>;
+            quick-tap-ms = <200>;
+            flavor = "balanced";
+        };
+    };
+
+    macros {
+        //------------------------------------------------------------------------
+        //
+        // RGB and Bluetooth
+        //
+        //------------------------------------------------------------------------
+
+        rgb_ug_status_macro: rgb_ug_status_macro_0 {
+            label = "RGB_UG_STATUS";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&rgb_ug RGB_STATUS>;
+        };
+
+        bt_0: bt_profile_macro_0 {
+            label = "BT_0";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&out OUT_BLE &bt BT_SEL 0>;
+        };
+
+        bt_1: bt_profile_macro_1 {
+            label = "BT_1";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&out OUT_BLE &bt BT_SEL 1>;
+        };
+
+        bt_2: bt_profile_macro_2 {
+            label = "BT_2";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&out OUT_BLE &bt BT_SEL 2>;
+        };
+
+        bt_3: bt_profile_macro_3 {
+            label = "BT_3";
+            compatible = "zmk,behavior-macro";
+            #binding-cells = <0>;
+            bindings = <&out OUT_BLE &bt BT_SEL 3>;
+        };
+
+        //------------------------------------------------------------------------
+        //
+        // Cursor macros
+        //
+        //------------------------------------------------------------------------
+        //
+        // SELECT_WORD_DELAY defines how long the macro waits (milliseconds)
+        // after moving the cursor before it selects a word.  A larger delay
+        // may allow the macro to move to the next word upon each invocation.
+        //
+
+        #ifndef SELECT_WORD_DELAY
+        #define SELECT_WORD_DELAY 1
+        #endif
+
+        #define select_all kp _C(A)
+
+        ZMK_MACRO(
+
+        select_none,
+        wait-ms = <SELECT_WORD_DELAY>;
+        tap-ms = <SELECT_WORD_DELAY>;
+        bindings = <&kp DOWN &kp UP &kp RIGHT &kp LEFT>;
+
+        )
+
+        //
+        // select a word (jumps to next word upon each successive invocation)
+        //
+
+        select_word: select_word {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&select_word_right>, <&select_word_left>;
+
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        ZMK_MACRO(
+
+        select_word_right,
+        wait-ms = <SELECT_WORD_DELAY>;
+        tap-ms = <SELECT_WORD_DELAY>;
+        bindings = <&kp _WORD(RIGHT) &kp _WORD(LEFT) &kp _WORD(LS(RIGHT))>;
+
+        )
+        ZMK_MACRO(
+
+        select_word_left,
+        wait-ms = <SELECT_WORD_DELAY>;
+        tap-ms = <SELECT_WORD_DELAY>;
+        bindings = <&kp _WORD(LEFT) &kp _WORD(RIGHT) &kp _WORD(LS(LEFT))>;
+
+        )
+
+        //
+        // extend current selection by one word
+        //
+
+        extend_word: extend_word {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&extend_word_right>, <&extend_word_left>;
+
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        ZMK_MACRO(
+
+        extend_word_right,
+        wait-ms = <SELECT_WORD_DELAY>;
+        tap-ms = <SELECT_WORD_DELAY>;
+        bindings = <&kp _WORD(LS(RIGHT))>;
+
+        )
+        ZMK_MACRO(
+
+        extend_word_left,
+        wait-ms = <SELECT_WORD_DELAY>;
+        tap-ms = <SELECT_WORD_DELAY>;
+        bindings = <&kp _WORD(LS(LEFT))>;
+
+        )
+
+        //
+        // select current line
+        //
+
+        select_line: select_line {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&select_line_right>, <&select_line_left>;
+
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        ZMK_MACRO(
+
+        select_line_right,
+        wait-ms = <SELECT_WORD_DELAY>;
+        tap-ms = <SELECT_WORD_DELAY>;
+        bindings = <&kp _HOME &kp LS(_END)>;
+
+        )
+        ZMK_MACRO(
+
+        select_line_left,
+        wait-ms = <SELECT_WORD_DELAY>;
+        tap-ms = <SELECT_WORD_DELAY>;
+        bindings = <&kp _END &kp LS(_HOME)>;
+
+        )
+
+        //
+        // extend current selection by one line
+        //
+
+        extend_line: extend_line {
+            compatible = "zmk,behavior-mod-morph";
+            #binding-cells = <0>;
+            bindings = <&extend_line_right>, <&extend_line_left>;
+
+            mods = <(MOD_LSFT|MOD_RSFT)>;
+        };
+
+        alt_tap_dance: alt_tap_dance {
+            compatible = "zmk,behavior-tap-dance";
+            label = "ALT_TAP_DANCE";
+            #binding-cells = <0>;
+            bindings = <&kp LEFT_ALT>, <&kp RIGHT_ALT>;
+        };
+
+        ZMK_MACRO(
+
+        extend_line_right,
+        wait-ms = <SELECT_WORD_DELAY>;
+        tap-ms = <SELECT_WORD_DELAY>;
+        bindings = <&kp LS(DOWN) &kp LS(_END)>;
+
+        )
+        ZMK_MACRO(
+
+        extend_line_left,
+        wait-ms = <SELECT_WORD_DELAY>;
+        tap-ms = <SELECT_WORD_DELAY>;
+        bindings = <&kp LS(UP) &kp LS(_HOME)>;
+
+        )
+    };
+
+    combos {
+        compatible = "zmk,combos";
+
+        kl {
+            bindings = <&kp UNDERSCORE>;
+            key-positions = <43 42>;
+            layers = <0 1>;
+        };
+
+        jk {
+            bindings = <&kp UNDERSCORE>;
+            key-positions = <41 42>;
+        };
+    };
+
     chosen { zmk,matrix-transform = &imprint_number_row;
     };
+
     keymap {
         compatible = "zmk,keymap";
 
